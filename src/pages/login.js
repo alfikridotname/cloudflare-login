@@ -1,8 +1,8 @@
 export function loginPage(
-    error = "",
-    success = ""
+  error = "",
+  success = ""
 ) {
-    return new Response(`
+  return new Response(`
 <!DOCTYPE html>
 <html lang="id">
 
@@ -147,22 +147,22 @@ a {
   </p>
 
   ${error
-            ? `
+      ? `
         <div class="error">
           ${escapeHtml(error)}
         </div>
       `
-            : ""
-        }
+      : ""
+    }
 
   ${success
-            ? `
+      ? `
         <div class="success">
           ${escapeHtml(success)}
         </div>
       `
-            : ""
-        }
+      : ""
+    }
 
   <form
     method="POST"
@@ -194,14 +194,8 @@ a {
   </form>
 
   <p class="bottom">
-
-    Belum punya akun?
-
-    <a href="/register">
-      Buat Akun
-    </a>
-
-  </p>
+  Silakan masuk menggunakan akun Anda.
+</p>
 
 </div>
 
@@ -209,18 +203,18 @@ a {
 
 </html>
   `, {
-        headers: {
-            "Content-Type":
-                "text/html; charset=UTF-8"
-        }
-    });
+    headers: {
+      "Content-Type":
+        "text/html; charset=UTF-8"
+    }
+  });
 }
 
 function escapeHtml(value) {
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

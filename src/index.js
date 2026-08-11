@@ -33,6 +33,16 @@ export default {
                 request.method === "GET" &&
                 path === "/register"
             ) {
+                const user =
+                    await getCurrentUser(
+                        request,
+                        env
+                    );
+
+                if (!user) {
+                    return redirect("/login");
+                }
+
                 return registerPage();
             }
 
@@ -40,6 +50,16 @@ export default {
                 request.method === "POST" &&
                 path === "/register"
             ) {
+                const user =
+                    await getCurrentUser(
+                        request,
+                        env
+                    );
+
+                if (!user) {
+                    return redirect("/login");
+                }
+
                 return await handleRegister(
                     request,
                     env

@@ -20,12 +20,33 @@ export async function createSession(
         randomBytes(32)
     );
 
-    const tokenHash = await sha256(token);
+    const tokenHash =
+        await sha256(token);
 
     const expiresAt =
         Math.floor(Date.now() / 1000) +
         SESSION_DAYS * 24 * 60 * 60;
 
+    const tokenHashString =
+        base64UrlEncode(tokenHash);
+
+    /*
+     * Hapus session lama user.
+     *
+     * Artinya:
+     * satu user = satu session aktif.
+     */
+    await env.DB
+        .prepare(`
+      DELETE FROM sessions
+      WHERE user_id = ?
+    `)
+        .bind(userId)
+        .run();
+
+    /*
+     * Buat session baru.
+     */
     await env.DB
         .prepare(`
       INSERT INTO sessions
@@ -37,7 +58,7 @@ export async function createSession(
       VALUES (?, ?, ?)
     `)
         .bind(
-            base64UrlEncode(tokenHash),
+            tokenHashString,
             userId,
             expiresAt
         )
@@ -45,6 +66,7 @@ export async function createSession(
 
     return {
         token,
+
         cookie: createSessionCookie(
             token,
             SESSION_DAYS * 24 * 60 * 60
