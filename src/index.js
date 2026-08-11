@@ -151,6 +151,30 @@ export default {
             }
 
             /*
+ * ==========================================
+ * PROTECTED TOOL HTML ASSETS
+ * ==========================================
+ */
+
+            if (
+                request.method === "GET" &&
+                path.startsWith("/tools/") &&
+                path.endsWith(".html")
+            ) {
+                const user =
+                    await getCurrentUser(
+                        request,
+                        env
+                    );
+
+                if (!user) {
+                    return redirect("/login");
+                }
+
+                return env.ASSETS.fetch(request);
+            }
+
+            /*
              * ==========================================
              * 404
              * ==========================================
