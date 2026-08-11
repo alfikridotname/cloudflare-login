@@ -9,11 +9,11 @@ export const tools = [
     },
 
     {
-        slug: "split-layout",
-        name: "Split Layout",
+        slug: "Storyboard_3x3_Cropper_Mobile",
+        name: "Storyboard 3x3 Cropper ",
         description:
-            "Tool untuk membuat dan memproses split layout.",
+            "Tool untuk memotong storyboard menjadi 3x3.",
         icon: "✂️",
-        category: "Product Tools"
+        category: "Youtube Tools"
     }
 ];

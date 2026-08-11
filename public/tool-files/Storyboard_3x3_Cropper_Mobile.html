@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111"><title>Storyboard 3x3 Cropper</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101010;color:#eee;font-family:system-ui,-apple-system,sans-serif}.wrap{max-width:760px;margin:auto;padding:18px 12px 36px}h1{font-size:24px;margin:0 0 5px}.sub,.note,.status{color:#aaa;font-size:13px;line-height:1.5}.card{background:#1a1a1a;border:1px solid #303030;border-radius:16px;padding:15px;margin:14px 0}.drop{display:block;border:2px dashed #555;border-radius:14px;padding:34px 12px;text-align:center;background:#141414;cursor:pointer}.drop strong{display:block;font-size:16px;margin-bottom:6px}.drop span{color:#999;font-size:13px}input{display:none}.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}button{width:100%;border:0;border-radius:10px;padding:12px 7px;background:#eee;color:#111;font-weight:700;cursor:pointer}button.secondary{background:#333;color:#eee}button:disabled{opacity:.4}.preview{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}.item{background:#111;border:1px solid #2d2d2d;border-radius:9px;padding:5px}.item img{width:100%;aspect-ratio:1;object-fit:contain;background:#050505;border-radius:6px;display:block}.name{text-align:center;color:#bbb;font-size:11px;padding:5px 0}.item button{padding:8px 3px;font-size:11px}@media(max-width:420px){.wrap{padding:13px 9px}.card{padding:12px}.drop{padding:28px 10px}}
+</style></head><body><div class="wrap">
+<h1>Storyboard 3×3 Cropper</h1><p class="sub">Upload 1 storyboard 3×3 → otomatis menjadi FRAME_01 sampai FRAME_09. Cocok untuk Android, iPhone, tablet, dan desktop.</p>
+<div class="card">
+<label class="drop" id="drop"><strong>📷 Pilih Storyboard 3×3</strong><span>Tap untuk memilih foto dari Galeri / Files</span><input id="file" type="file" accept="image/png,image/jpeg,image/webp"></label>
+<div class="controls"><button id="crop" disabled>Crop 9 Frame</button><button id="all" class="secondary" disabled>Download 9 PNG</button></div>
+<div id="status" class="status">Belum ada storyboard.</div><div id="preview" class="preview"></div>
+</div>
+<div class="card note"><b>Cara:</b> upload storyboard → Crop 9 Frame → download tiap frame atau semua. Tidak ada ZIP. Semua proses dilakukan langsung di perangkat; gambar tidak dikirim ke server.</div>
+</div>
+<script>
+let im=null,res=[];const file=document.getElementById('file'),drop=document.getElementById('drop'),crop=document.getElementById('crop'),all=document.getElementById('all'),status=document.getElementById('status'),preview=document.getElementById('preview');
+drop.onclick=()=>file.click();file.onchange=()=>file.files[0]&&load(file.files[0]);
+['dragenter','dragover'].forEach(e=>drop.addEventListener(e,x=>{x.preventDefault();drop.style.borderColor='#aaa'}));['dragleave','drop'].forEach(e=>drop.addEventListener(e,x=>{x.preventDefault();drop.style.borderColor='#555'}));
+drop.addEventListener('drop',e=>e.dataTransfer.files[0]&&load(e.dataTransfer.files[0]));
+function load(f){if(!f.type.startsWith('image/'))return status.textContent='Gunakan PNG, JPG, atau WEBP.';let r=new FileReader();r.onload=e=>{let x=new Image();x.onload=()=>{im=x;res=[];preview.innerHTML='';crop.disabled=false;all.disabled=true;status.textContent=`Siap: ${x.naturalWidth} × ${x.naturalHeight}px.`};x.src=e.target.result};r.readAsDataURL(f)}
+function make(i){let w=Math.floor(im.naturalWidth/3),h=Math.floor(im.naturalHeight/3),row=Math.floor(i/3),col=i%3,x=col*w,y=row*h,cw=col===2?im.naturalWidth-x:w,ch=row===2?im.naturalHeight-y:h,c=document.createElement('canvas');c.width=cw;c.height=ch;c.getContext('2d').drawImage(im,x,y,cw,ch,0,0,cw,ch);return new Promise(ok=>c.toBlob(b=>{res[i]={blob:b,name:`FRAME_${String(i+1).padStart(2,'0')}.png`};ok()},'image/png'))}
+function dl(r){let u=URL.createObjectURL(r.blob),a=document.createElement('a');a.href=u;a.download=r.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+crop.onclick=async()=>{crop.disabled=true;all.disabled=true;preview.innerHTML='';res=[];status.textContent='Memproses 9 frame...';for(let i=0;i<9;i++){await make(i);let box=document.createElement('div');box.className='item';let img=document.createElement('img');img.src=URL.createObjectURL(res[i].blob);let n=document.createElement('div');n.className='name';n.textContent=res[i].name;let b=document.createElement('button');b.textContent='Download';b.onclick=()=>dl(res[i]);box.append(img,n,b);preview.append(box)}crop.disabled=false;all.disabled=false;status.textContent='Selesai. 9 frame siap didownload.'}
+all.onclick=async()=>{status.textContent='Memulai 9 download...';for(let r of res){dl(r);await new Promise(x=>setTimeout(x,500))}status.textContent='Selesai. Jika browser meminta izin multiple downloads, pilih Allow/Izinkan.'}
+</script></body></html>
