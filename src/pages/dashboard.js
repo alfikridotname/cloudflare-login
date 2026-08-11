@@ -11,66 +11,97 @@ export function dashboardPage(user) {
     categories[ tool.category ].push(tool);
   }
 
-  const categoryHtml =
-    Object.entries(categories)
-      .map(([ category, categoryTools ]) => {
+  const sidebarCategories = Object.entries(categories)
+    .map(([ category, categoryTools ]) => {
 
-        const cards =
-          categoryTools
-            .map(tool => `
-              <a
-                href="/tools/${encodeURIComponent(tool.slug)}"
-                class="tool-card"
-              >
+      const items = categoryTools
+        .map(tool => `
+          <a
+            href="/tools/${encodeURIComponent(tool.slug)}"
+            class="sidebar-tool"
+          >
+            <span class="sidebar-tool-icon">
+              ${tool.icon}
+            </span>
 
-                <div class="tool-icon">
-                  ${tool.icon}
-                </div>
+            <span>
+              ${escapeHtml(tool.name)}
+            </span>
+          </a>
+        `)
+        .join("");
 
-                <div class="tool-content">
+      return `
+        <div class="sidebar-section">
 
-                  <h3>
-                    ${escapeHtml(tool.name)}
-                  </h3>
+          <div class="sidebar-section-title">
+            ${escapeHtml(category)}
+          </div>
 
-                  <p>
-                    ${escapeHtml(tool.description)}
-                  </p>
+          ${items}
 
-                  <span class="open-tool">
-                    Buka Tool →
-                  </span>
+        </div>
+      `;
+    })
+    .join("");
 
-                </div>
+  const categoryContent = Object.entries(categories)
+    .map(([ category, categoryTools ]) => {
 
-              </a>
-            `)
-            .join("");
+      const cards = categoryTools
+        .map(tool => `
+          <a
+            href="/tools/${encodeURIComponent(tool.slug)}"
+            class="tool-card"
+          >
 
-        return `
-          <section class="category">
+            <div class="tool-icon">
+              ${tool.icon}
+            </div>
 
-            <div class="category-header">
+            <div class="tool-info">
 
-              <h2>
-                ${escapeHtml(category)}
-              </h2>
+              <h3>
+                ${escapeHtml(tool.name)}
+              </h3>
 
-              <span>
-                ${categoryTools.length} tool
+              <p>
+                ${escapeHtml(tool.description)}
+              </p>
+
+              <span class="open-tool">
+                Buka Tool →
               </span>
 
             </div>
 
-            <div class="tools-grid">
-              ${cards}
-            </div>
+          </a>
+        `)
+        .join("");
 
-          </section>
-        `;
+      return `
+        <section class="tool-category">
 
-      })
-      .join("");
+          <div class="category-heading">
+
+            <h2>
+              ${escapeHtml(category)}
+            </h2>
+
+            <span>
+              ${categoryTools.length} tool
+            </span>
+
+          </div>
+
+          <div class="tools-grid">
+            ${cards}
+          </div>
+
+        </section>
+      `;
+    })
+    .join("");
 
   return new Response(`
 <!DOCTYPE html>
@@ -86,7 +117,7 @@ export function dashboardPage(user) {
   content="width=device-width, initial-scale=1.0"
 >
 
-<title>Dashboard - Cloudflare Tools</title>
+<title>Cloudflare Tools</title>
 
 <style>
 
@@ -94,8 +125,12 @@ export function dashboardPage(user) {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
+
+  min-height: 100%;
 
   font-family:
     Arial,
@@ -106,120 +141,261 @@ body {
   color: #111827;
 }
 
-/* =========================
-   HEADER
-   ========================= */
+/* =========================================
+   LAYOUT
+========================================= */
 
-.header {
-  height: 64px;
+.app {
+  min-height: 100vh;
+
+  display: flex;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar {
+  width: 270px;
+
+  position: fixed;
+
+  top: 0;
+  bottom: 0;
+  left: 0;
 
   background: #111827;
   color: white;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  overflow-y: auto;
 
-  padding: 0 28px;
+  padding: 22px 15px;
+
+  z-index: 20;
 }
 
-.brand {
-  font-size: 18px;
+.logo {
+  padding: 5px 12px 25px;
+
+  font-size: 19px;
   font-weight: bold;
+
+  border-bottom:
+    1px solid #374151;
+
+  margin-bottom: 20px;
 }
 
-.header-right {
+.logo-icon {
+  margin-right: 7px;
+}
+
+/* =========================================
+   SIDEBAR MENU
+========================================= */
+
+.sidebar-section {
+  margin-bottom: 25px;
+}
+
+.sidebar-section-title {
+  padding: 0 12px 8px;
+
+  color: #9ca3af;
+
+  font-size: 11px;
+
+  font-weight: bold;
+
+  text-transform: uppercase;
+
+  letter-spacing: .7px;
+}
+
+.sidebar-tool {
   display: flex;
+
   align-items: center;
-  gap: 15px;
-}
 
-.user-name {
-  font-size: 14px;
-  color: #d1d5db;
-}
+  gap: 9px;
 
-.logout-button {
-  border: 0;
+  padding: 10px 12px;
+
+  margin-bottom: 3px;
+
   border-radius: 7px;
 
-  background: #dc2626;
-  color: white;
+  color: #d1d5db;
 
-  padding: 9px 14px;
+  text-decoration: none;
 
   font-size: 13px;
-  font-weight: bold;
+}
+
+.sidebar-tool:hover {
+  background: #1f2937;
+  color: white;
+}
+
+.sidebar-tool-icon {
+  width: 22px;
+
+  text-align: center;
+
+  font-size: 16px;
+}
+
+/* =========================================
+   SIDEBAR BOTTOM
+========================================= */
+
+.sidebar-bottom {
+  margin-top: 30px;
+
+  padding-top: 18px;
+
+  border-top:
+    1px solid #374151;
+}
+
+.sidebar-link {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px 12px;
+
+  color: #d1d5db;
+
+  text-decoration: none;
+
+  border-radius: 7px;
+
+  font-size: 13px;
+}
+
+.sidebar-link:hover {
+  background: #1f2937;
+  color: white;
+}
+
+.sidebar-logout {
+  width: 100%;
+
+  margin-top: 5px;
+
+  padding: 10px 12px;
+
+  border: 0;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #fca5a5;
+
+  text-align: left;
+
+  font-size: 13px;
 
   cursor: pointer;
 }
 
-.logout-button:hover {
-  background: #ef4444;
+.sidebar-logout:hover {
+  background: #450a0a;
 }
 
-/* =========================
+/* =========================================
    MAIN
-   ========================= */
+========================================= */
 
 .main {
-  max-width: 1200px;
+  margin-left: 270px;
 
-  margin: 0 auto;
+  width: calc(100% - 270px);
 
-  padding: 40px 25px 60px;
+  min-height: 100vh;
+
+  padding: 35px;
 }
 
-.hero {
-  margin-bottom: 40px;
+/* =========================================
+   TOP BAR
+========================================= */
+
+.topbar {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 35px;
 }
 
-.hero h1 {
-  margin: 0 0 8px;
+.page-title h1 {
+  margin: 0 0 7px;
 
-  font-size: 32px;
+  font-size: 28px;
 }
 
-.hero p {
+.page-title p {
   margin: 0;
 
   color: #6b7280;
 
-  font-size: 15px;
+  font-size: 14px;
 }
 
-/* =========================
-   CATEGORY
-   ========================= */
+.user {
+  padding: 9px 14px;
 
-.category {
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+
+  color: #374151;
+}
+
+/* =========================================
+   CATEGORY
+========================================= */
+
+.tool-category {
   margin-bottom: 40px;
 }
 
-.category-header {
+.category-heading {
   display: flex;
 
   align-items: center;
+
   justify-content: space-between;
 
   margin-bottom: 15px;
 }
 
-.category-header h2 {
+.category-heading h2 {
   margin: 0;
 
-  font-size: 20px;
+  font-size: 18px;
 }
 
-.category-header span {
+.category-heading span {
   color: #6b7280;
 
-  font-size: 13px;
+  font-size: 12px;
 }
 
-/* =========================
-   TOOLS
-   ========================= */
+/* =========================================
+   TOOL CARDS
+========================================= */
 
 .tools-grid {
   display: grid;
@@ -238,32 +414,30 @@ body {
 
   gap: 16px;
 
-  padding: 22px;
+  padding: 20px;
 
   background: white;
 
-  border-radius: 14px;
+  border:
+    1px solid #e5e7eb;
 
-  text-decoration: none;
+  border-radius: 13px;
 
   color: inherit;
 
-  border: 1px solid #e5e7eb;
+  text-decoration: none;
 
   transition:
     transform .15s ease,
-    box-shadow .15s ease,
-    border-color .15s ease;
+    box-shadow .15s ease;
 }
 
 .tool-card:hover {
   transform: translateY(-3px);
 
-  border-color: #cbd5e1;
-
   box-shadow:
-    0 10px 30px
-    rgba(0, 0, 0, .08);
+    0 10px 25px
+    rgba(0,0,0,.08);
 }
 
 .tool-icon {
@@ -273,32 +447,33 @@ body {
   flex-shrink: 0;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
-  border-radius: 12px;
-
   background: #f3f4f6;
 
-  font-size: 26px;
+  border-radius: 11px;
+
+  font-size: 25px;
 }
 
-.tool-content {
+.tool-info {
   min-width: 0;
 }
 
-.tool-content h3 {
+.tool-info h3 {
   margin: 0 0 7px;
 
-  font-size: 16px;
+  font-size: 15px;
 }
 
-.tool-content p {
-  margin: 0 0 15px;
+.tool-info p {
+  margin: 0 0 13px;
 
   color: #6b7280;
 
-  font-size: 13px;
+  font-size: 12px;
 
   line-height: 1.5;
 }
@@ -306,42 +481,74 @@ body {
 .open-tool {
   color: #2563eb;
 
-  font-size: 13px;
+  font-size: 12px;
 
   font-weight: bold;
 }
 
-/* =========================
+/* =========================================
    MOBILE
-   ========================= */
+========================================= */
+
+.mobile-header {
+  display: none;
+}
+
+@media (max-width: 800px) {
+
+  .sidebar {
+    width: 220px;
+  }
+
+  .main {
+    margin-left: 220px;
+
+    width:
+      calc(100% - 220px);
+
+    padding: 25px 18px;
+  }
+
+}
 
 @media (max-width: 600px) {
 
-  .header {
-    height: auto;
-
-    min-height: 60px;
-
-    padding: 12px 15px;
-  }
-
-  .brand {
-    font-size: 15px;
-  }
-
-  .user-name {
+  .sidebar {
     display: none;
   }
 
   .main {
-    padding:
-      30px
-      15px
-      50px;
+    margin-left: 0;
+
+    width: 100%;
+
+    padding: 20px 15px;
   }
 
-  .hero h1 {
-    font-size: 26px;
+  .mobile-header {
+    display: flex;
+
+    height: 55px;
+
+    align-items: center;
+
+    padding: 0 15px;
+
+    background: #111827;
+
+    color: white;
+  }
+
+  .mobile-header strong {
+    font-size: 16px;
+  }
+
+  .topbar {
+    margin-top: 25px;
+  }
+
+  .user {
+    display: none;
   }
 
   .tools-grid {
@@ -356,58 +563,105 @@ body {
 
 <body>
 
-<header class="header">
+<div class="app">
 
-  <div class="brand">
-    Cloudflare Tools
-  </div>
+  <!-- =====================================
+       SIDEBAR
+  ====================================== -->
 
-  <div class="header-right">
+  <aside class="sidebar">
 
-    <div class="user-name">
-      ${escapeHtml(user.name)}
+    <div class="logo">
+      <span class="logo-icon">🛠️</span>
+      Cloudflare Tools
     </div>
 
-    <form
-      method="POST"
-      action="/logout"
-      style="margin:0"
-    >
+    ${sidebarCategories}
 
-      <button
-        type="submit"
-        class="logout-button"
+    <div class="sidebar-bottom">
+
+      <a
+        href="/dashboard"
+        class="sidebar-link"
       >
-        Logout
-      </button>
+        🏠 Dashboard
+      </a>
 
-    </form>
+      <a
+        href="/profile"
+        class="sidebar-link"
+      >
+        ⚙️ Profile
+      </a>
+
+      <form
+        method="POST"
+        action="/logout"
+        style="margin:0"
+      >
+
+        <button
+          type="submit"
+          class="sidebar-logout"
+        >
+          🚪 Logout
+        </button>
+
+      </form>
+
+    </div>
+
+  </aside>
+
+  <!-- =====================================
+       MOBILE HEADER
+  ====================================== -->
+
+  <div class="mobile-header">
+
+    <strong>
+      🛠️ Cloudflare Tools
+    </strong>
 
   </div>
 
-</header>
+  <!-- =====================================
+       MAIN
+  ====================================== -->
 
-<main class="main">
+  <main class="main">
 
-  <div class="hero">
+    <div class="topbar">
 
-    <h1>
-      Dashboard
-    </h1>
+      <div class="page-title">
 
-    <p>
-      Selamat datang kembali,
-      <strong>
+        <h1>
+          Dashboard
+        </h1>
+
+        <p>
+          Selamat datang kembali,
+          <strong>
+            ${escapeHtml(user.name)}
+          </strong>.
+        </p>
+
+      </div>
+
+      <div class="user">
+
+        👤
         ${escapeHtml(user.name)}
-      </strong>.
-      Pilih tool yang ingin digunakan.
-    </p>
 
-  </div>
+      </div>
 
-  ${categoryHtml}
+    </div>
 
-</main>
+    ${categoryContent}
+
+  </main>
+
+</div>
 
 </body>
 
