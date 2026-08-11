@@ -15,7 +15,12 @@ export default {
             const url = new URL(request.url);
             const path = url.pathname;
 
-            // HOME
+            /*
+             * ==========================================
+             * PUBLIC AUTH ROUTES
+             * ==========================================
+             */
+
             if (
                 request.method === "GET" &&
                 path === "/"
@@ -23,7 +28,6 @@ export default {
                 return homePage();
             }
 
-            // REGISTER PAGE
             if (
                 request.method === "GET" &&
                 path === "/register"
@@ -31,7 +35,6 @@ export default {
                 return registerPage();
             }
 
-            // REGISTER ACTION
             if (
                 request.method === "POST" &&
                 path === "/register"
@@ -42,15 +45,12 @@ export default {
                 );
             }
 
-            // LOGIN PAGE
             if (
                 request.method === "GET" &&
                 path === "/login"
             ) {
                 const registered =
-                    url.searchParams.get(
-                        "registered"
-                    );
+                    url.searchParams.get("registered");
 
                 return loginPage(
                     "",
@@ -60,7 +60,6 @@ export default {
                 );
             }
 
-            // LOGIN ACTION
             if (
                 request.method === "POST" &&
                 path === "/login"
@@ -71,7 +70,12 @@ export default {
                 );
             }
 
-            // DASHBOARD
+            /*
+             * ==========================================
+             * DASHBOARD
+             * ==========================================
+             */
+
             if (
                 request.method === "GET" &&
                 path === "/dashboard"
@@ -83,18 +87,18 @@ export default {
                     );
 
                 if (!user) {
-                    return new Response(null, {
-                        status: 302,
-                        headers: {
-                            Location: "/login"
-                        }
-                    });
+                    return redirect("/login");
                 }
 
                 return dashboardPage(user);
             }
 
-            // LOGOUT
+            /*
+             * ==========================================
+             * LOGOUT
+             * ==========================================
+             */
+
             if (
                 request.method === "POST" &&
                 path === "/logout"
@@ -104,6 +108,42 @@ export default {
                     env
                 );
             }
+
+            /*
+             * ==========================================
+             * PROTECTED HTML TOOLS
+             * ==========================================
+             */
+
+            if (
+                path.startsWith("/tools/")
+            ) {
+                const user =
+                    await getCurrentUser(
+                        request,
+                        env
+                    );
+
+                /*
+                 * Belum login
+                 */
+                if (!user) {
+                    return redirect("/login");
+                }
+
+                /*
+                 * Sudah login.
+                 * Teruskan request ke
+                 * HTML asli di /public.
+                 */
+                return env.ASSETS.fetch(request);
+            }
+
+            /*
+             * ==========================================
+             * 404
+             * ==========================================
+             */
 
             return new Response(
                 "404 - Halaman tidak ditemukan",
@@ -132,3 +172,13 @@ export default {
         }
     }
 };
+
+
+function redirect(location) {
+    return new Response(null, {
+        status: 302,
+        headers: {
+            Location: location
+        }
+    });
+}
