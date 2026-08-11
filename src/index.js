@@ -111,36 +111,6 @@ export default {
             }
 
             /*
-             * ==========================================
-             * PROTECTED HTML TOOLS
-             * ==========================================
-             */
-
-            if (
-                path.startsWith("/tools/")
-            ) {
-                const user =
-                    await getCurrentUser(
-                        request,
-                        env
-                    );
-
-                /*
-                 * Belum login
-                 */
-                if (!user) {
-                    return redirect("/login");
-                }
-
-                /*
-                 * Sudah login.
-                 * Teruskan request ke
-                 * HTML asli di /public.
-                 */
-                return env.ASSETS.fetch(request);
-            }
-
-            /*
  * ==========================================
  * TOOL SHELL
  * ==========================================
@@ -166,14 +136,6 @@ export default {
                         .replace("/tools/", "")
                         .replace(/\/$/, "");
 
-                /*
-                 * Hanya izinkan nama tool sederhana.
-                 *
-                 * Contoh:
-                 * split-layout
-                 * image-downloader
-                 * cropper
-                 */
                 if (
                     !/^[a-zA-Z0-9_-]+$/.test(tool)
                 ) {
