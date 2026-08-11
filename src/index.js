@@ -2,6 +2,7 @@ import { homePage } from "./pages/home.js";
 import { registerPage } from "./pages/register.js";
 import { loginPage } from "./pages/login.js";
 import { dashboardPage } from "./pages/dashboard.js";
+import { toolShellPage } from "./pages/tool-shell.js";
 
 import { handleRegister } from "./auth/register.js";
 import { handleLogin } from "./auth/login.js";
@@ -137,6 +138,54 @@ export default {
                  * HTML asli di /public.
                  */
                 return env.ASSETS.fetch(request);
+            }
+
+            /*
+ * ==========================================
+ * TOOL SHELL
+ * ==========================================
+ */
+
+            if (
+                request.method === "GET" &&
+                path.startsWith("/tools/") &&
+                !path.endsWith(".html")
+            ) {
+                const user =
+                    await getCurrentUser(
+                        request,
+                        env
+                    );
+
+                if (!user) {
+                    return redirect("/login");
+                }
+
+                const tool =
+                    path
+                        .replace("/tools/", "")
+                        .replace(/\/$/, "");
+
+                /*
+                 * Hanya izinkan nama tool sederhana.
+                 *
+                 * Contoh:
+                 * split-layout
+                 * image-downloader
+                 * cropper
+                 */
+                if (
+                    !/^[a-zA-Z0-9_-]+$/.test(tool)
+                ) {
+                    return new Response(
+                        "Tool tidak valid",
+                        {
+                            status: 400
+                        }
+                    );
+                }
+
+                return toolShellPage(tool);
             }
 
             /*
