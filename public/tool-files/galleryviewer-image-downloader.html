@@ -1,319 +1,540 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GalleryViewer Image Downloader</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#f4f6f8;color:#101828;font-family:Arial,sans-serif}
-.container{max-width:1100px;margin:32px auto;padding:0 20px}
-h1{margin:0 0 8px}.sub{color:#667085;margin:0 0 22px}
-.card{background:#fff;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,.07)}
-.row{display:flex;gap:10px}
-input[type=text]{flex:1;padding:13px;border:1px solid #d0d5dd;border-radius:9px;font-size:15px}
-button{border:0;border-radius:9px;padding:11px 16px;font-weight:600;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-.primary{background:#111827;color:#fff}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}
-.options{display:flex;gap:18px;flex-wrap:wrap;margin-top:15px;color:#475467;font-size:14px;align-items:center}
-.smallinput{width:130px!important;flex:none!important;padding:8px!important}
-.status{margin-top:14px;color:#475467}
-.progress{height:7px;background:#eaecf0;border-radius:20px;margin-top:10px;overflow:hidden}
-.bar{height:100%;width:0;background:#111827;transition:.2s}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
-.item{background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden}
-.thumb{height:205px;background:#f2f4f7;display:flex;align-items:center;justify-content:center}
-.thumb img{width:100%;height:100%;object-fit:contain}
-.info{padding:12px}.badge{font-size:11px;background:#eef2ff;color:#3730a3;padding:4px 8px;border-radius:20px}
-.filename{font-weight:700;margin-top:9px;word-break:break-all}.url{font-size:11px;color:#667085;word-break:break-all;margin:8px 0}
-.empty{text-align:center;padding:45px;color:#667085}
-.note{font-size:13px;color:#667085;line-height:1.5}
-.success{color:#027a48}.error{color:#b42318}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GalleryViewer Image Downloader</title>
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      color: #101828;
+      font-family: Arial, sans-serif
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 20px
+    }
+
+    h1 {
+      margin: 0 0 8px
+    }
+
+    .sub {
+      color: #667085;
+      margin: 0 0 22px
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .07)
+    }
+
+    .row {
+      display: flex;
+      gap: 10px
+    }
+
+    input[type=text] {
+      flex: 1;
+      padding: 13px;
+      border: 1px solid #d0d5dd;
+      border-radius: 9px;
+      font-size: 15px
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 16px;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .primary {
+      background: #111827;
+      color: #fff
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827
+    }
+
+    .danger {
+      background: #fee2e2;
+      color: #991b1b
+    }
+
+    .options {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+      color: #475467;
+      font-size: 14px;
+      align-items: center
+    }
+
+    .smallinput {
+      width: 130px !important;
+      flex: none !important;
+      padding: 8px !important
+    }
+
+    select {
+      padding: 9px 12px;
+      border: 1px solid #d0d5dd;
+      border-radius: 9px;
+      background: #fff;
+      color: #101828;
+      font-size: 14px
+    }
+
+    .status {
+      margin-top: 14px;
+      color: #475467
+    }
+
+    .progress {
+      height: 7px;
+      background: #eaecf0;
+      border-radius: 20px;
+      margin-top: 10px;
+      overflow: hidden
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: #111827;
+      transition: .2s
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px
+    }
+
+    .item {
+      background: #fff;
+      border: 1px solid #e4e7ec;
+      border-radius: 12px;
+      overflow: hidden
+    }
+
+    .thumb {
+      height: 205px;
+      background: #f2f4f7;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .info {
+      padding: 12px
+    }
+
+    .badge {
+      font-size: 11px;
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 4px 8px;
+      border-radius: 20px
+    }
+
+    .filename {
+      font-weight: 700;
+      margin-top: 9px;
+      word-break: break-all
+    }
+
+    .url {
+      font-size: 11px;
+      color: #667085;
+      word-break: break-all;
+      margin: 8px 0
+    }
+
+    .empty {
+      text-align: center;
+      padding: 45px;
+      color: #667085
+    }
+
+    .note {
+      font-size: 13px;
+      color: #667085;
+      line-height: 1.5
+    }
+
+    .success {
+      color: #027a48
+    }
+
+    .error {
+      color: #b42318
+    }
+  </style>
 </head>
+
 <body>
-<div class="container">
-<h1>GalleryViewer Image Downloader</h1>
-<p class="sub">Ambil gambar hanya dari <b>div[id^="GalleryViewer-template--"]</b>.</p>
+  <div class="container">
+    <h1>GalleryViewer Image Downloader</h1>
+    <p class="sub">Ambil gambar berdasarkan selector yang dipilih.</p>
 
-<div class="card">
-  <div class="row">
-    <input type="text" id="url" placeholder="https://910.id/products/nama-produk"
-           value="https://910.id/products/yuza-matterhorn-2-0-putih-abu">
-    <button class="primary" id="fetchBtn" onclick="fetchProduct()">Ambil Gallery</button>
-  </div>
+    <div class="card">
+      <div class="row">
+        <input type="text" id="url" placeholder="Paste URL produk..." value="">
+        <button class="secondary" id="pasteBtn" onclick="pasteUrl()">Paste</button>
+        <button class="primary" id="fetchBtn" onclick="fetchProduct()">Ambil Gallery</button>
+      </div>
 
-  <div class="options">
-    <label><input type="checkbox" id="original" checked> URL original (hapus width)</label>
-    <label><input type="checkbox" id="excludeSize" checked> Abaikan Size Chart</label>
-    <label>Nama: <input type="text" id="prefix" class="smallinput" value="product"></label>
-  </div>
+      <div class="options">
+        <label>Website / Selector:
+          <select id="selectorPreset" onchange="changeSelectorPreset()">
+            <option value="910nineten" selected>910nineten — div[id^="GalleryViewer-template--"]</option>
+            <option value="custom">Custom Selector</option>
+          </select>
+        </label>
+        <input type="text" id="customSelector" class="smallinput" style="width:280px!important;display:none"
+          placeholder="Contoh: .product-gallery">
+        <label><input type="checkbox" id="original" checked> URL original (hapus width)</label>
+        <label><input type="checkbox" id="excludeSize" checked> Abaikan Size Chart</label>
+        <label>Nama: <input type="text" id="prefix" class="smallinput" value="product"></label>
+      </div>
 
-  <div id="status" class="status">Masukkan URL produk.</div>
-  <div class="progress"><div id="bar" class="bar"></div></div>
-  <p class="note">
-    Selector utama: <code>div[id^="GalleryViewer-template--"]</code>.
-    Tool tidak mengambil gambar di luar gallery tersebut.
-  </p>
-</div>
-
-<div class="card" id="actions" style="display:none">
-  <div style="margin-bottom:12px">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <div style="font-size:20px;font-weight:700" id="productTitle"></div>
-      <button class="secondary copy-btn" onclick="copyTitle()">Copy Title</button>
+      <div id="status" class="status">Masukkan URL produk.</div>
+      <div class="progress">
+        <div id="bar" class="bar"></div>
+      </div>
+      <p class="note">
+        Selector default 910nineten: <code>div[id^="GalleryViewer-template--"]</code>.
+        Pilih selector lain atau gunakan Custom Selector sesuai struktur website.
+      </p>
     </div>
-  </div>
-  <div id="productDescriptionBox" style="display:none;margin:12px 0 18px;padding:14px;background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px">
-      <div style="font-weight:700">Description</div>
-      <button class="secondary copy-btn" onclick="copyDescription()">Copy Description</button>
+
+    <div class="card" id="actions" style="display:none">
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div style="font-size:20px;font-weight:700" id="productTitle"></div>
+          <button class="secondary copy-btn" onclick="copyTitle()">Copy Title</button>
+        </div>
+      </div>
+      <div id="productDescriptionBox"
+        style="display:none;margin:12px 0 18px;padding:14px;background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="font-weight:700">Description</div>
+          <button class="secondary copy-btn" onclick="copyDescription()">Copy Description</button>
+        </div>
+        <div id="productDescription" style="white-space:pre-wrap;line-height:1.6;color:#475467"></div>
+      </div>
+      <b id="count"></b>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <button class="primary" onclick="downloadSelected()">Download Terpilih</button>
+        <button class="secondary" onclick="setAll(true)">Pilih Semua</button>
+        <button class="secondary" onclick="setAll(false)">Batal Semua</button>
+        <button class="danger" onclick="clearResults()">Clear</button>
+      </div>
     </div>
-    <div id="productDescription" style="white-space:pre-wrap;line-height:1.6;color:#475467"></div>
+
+    <div id="results" class="grid"></div>
   </div>
-  <b id="count"></b>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-    <button class="primary" onclick="downloadSelected()">Download Terpilih</button>
-    <button class="secondary" onclick="setAll(true)">Pilih Semua</button>
-    <button class="secondary" onclick="setAll(false)">Batal Semua</button>
-    <button class="danger" onclick="clearResults()">Clear</button>
-  </div>
-</div>
 
-<div id="results" class="grid"></div>
-</div>
+  <script>
+    let images = [];
+    let productTitle = '';
+    let productDescription = '';
 
-<script>
-let images=[];
-let productTitle='';
-let productDescription='';
-
-function normalize(url,base){
-  if(!url)return '';
-  url=url.trim().replace(/&amp;/g,'&');
-  try{
-    if(url.startsWith('//'))return 'https:'+url;
-    return new URL(url,base).href;
-  }catch(e){return '';}
-}
-
-function originalUrl(url){
-  if(!document.getElementById('original').checked)return url;
-  try{
-    const u=new URL(url);
-    u.searchParams.delete('width');
-    return u.toString();
-  }catch(e){return url;}
-}
-
-function ext(url){
-  try{
-    const m=new URL(url).pathname.match(/\.(jpg|jpeg|png|webp|gif|avif|svg)$/i);
-    return m?'.'+m[1].toLowerCase():'.jpg';
-  }catch(e){return '.jpg';}
-}
-
-function isSize(url,alt=''){
-  return /size.?chart|sizechart|size-chart|ukuran/i.test(url+' '+alt);
-}
-
-function add(url,alt,seen){
-  url=originalUrl(normalize(url,document.getElementById('url').value));
-  if(!url||!/^https?:/i.test(url))return;
-  if(document.getElementById('excludeSize').checked&&isSize(url,alt))return;
-  if(!seen.has(url)){
-    seen.add(url);
-    images.push({url,alt:alt||''});
-  }
-}
-
-function bestSrcset(srcset){
-  const arr=srcset.split(',').map(x=>{
-    const p=x.trim().split(/\s+/);
-    const w=p[1]&&/w$/.test(p[1])?parseInt(p[1]):0;
-    return {u:p[0],w};
-  }).filter(x=>x.u);
-  arr.sort((a,b)=>b.w-a.w);
-  return arr.length?arr[0].u:'';
-}
-
-function parseProductTitle(doc){
-  const titleEl = doc.querySelector('h1.f-product-single__title');
-  if (!titleEl) return '';
-
-  return titleEl.textContent
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function parseProductDescription(doc){
-  const tabs = doc.querySelector('.f-product-tabs__blocks');
-  if (!tabs) return '';
-
-  const content = tabs.querySelector('.f-tabs__content-inner .rte');
-  if (!content) return '';
-
-  // Ambil hanya elemen p dari area Description.
-  const paragraphs = [...content.querySelectorAll(':scope > p')]
-    .map(p => p.innerText.replace(/\s+/g, ' ').trim())
-    .filter(Boolean);
-
-  return paragraphs.join('\n\n');
-}
-
-function parseGallery(html,base){
-  const doc=new DOMParser().parseFromString(html,'text/html');
-  productTitle = parseProductTitle(doc);
-  productDescription = parseProductDescription(doc);
-  const galleries=[...doc.querySelectorAll('[id^="GalleryViewer-template--"]')]
-    .filter(gallery => gallery.querySelector('img, [data-src], [srcset]'));
-  const seen=new Set();
-
-  galleries.forEach(gallery=>{
-    gallery.querySelectorAll('img').forEach(img=>{
-      const alt=img.getAttribute('alt')||'';
-      const candidates=[
-        img.getAttribute('data-src'),
-        img.getAttribute('data-zoom'),
-        img.getAttribute('data-original'),
-        img.getAttribute('data-lazy-src'),
-        img.getAttribute('src')
-      ];
-      candidates.forEach(u=>add(u,alt,seen));
-
-      const srcset=img.getAttribute('srcset')||img.getAttribute('data-srcset')||'';
-      if(srcset)add(bestSrcset(srcset),alt,seen);
-    });
-
-    gallery.querySelectorAll('[data-src],[data-zoom],[data-original]').forEach(el=>{
-      add(el.getAttribute('data-src'),el.getAttribute('alt')||'',seen);
-      add(el.getAttribute('data-zoom'),el.getAttribute('alt')||'',seen);
-      add(el.getAttribute('data-original'),el.getAttribute('alt')||'',seen);
-    });
-
-    gallery.querySelectorAll('[srcset],[data-srcset]').forEach(el=>{
-      const ss=el.getAttribute('srcset')||el.getAttribute('data-srcset')||'';
-      add(bestSrcset(ss),el.getAttribute('alt')||'',seen);
-    });
-  });
-
-  return galleries.length;
-}
-
-async function getHTML(url){
-  const r=await fetch(url,{mode:'cors',credentials:'omit'});
-  if(!r.ok)throw new Error('HTTP '+r.status);
-  return await r.text();
-}
-
-async function getShopifyJSON(url){
-  const clean=url.split('?')[0].replace(/\/$/,'');
-  for(const endpoint of [clean+'.js',clean+'.json']){
-    try{
-      const r=await fetch(endpoint,{mode:'cors',credentials:'omit'});
-      if(!r.ok)continue;
-      return await r.json();
-    }catch(e){}
-  }
-  throw new Error('JSON Shopify tidak dapat diakses');
-}
-
-function parseJSON(data){
-  const seen=new Set();
-  if(Array.isArray(data.images)){
-    data.images.forEach(x=>add(typeof x==='string'?x:x.src,'',seen));
-  }
-}
-
-async function fetchProduct(){
-  const url=document.getElementById('url').value.trim();
-  if(!url){alert('Masukkan URL produk.');return;}
-
-  images=[];render();setProgress(5);
-  const btn=document.getElementById('fetchBtn');
-  btn.disabled=true;btn.textContent='Mengambil...';
-  setStatus('Mengambil halaman produk...');
-
-  try{
-    let galleryCount=0;
-    try{
-      const html=await getHTML(url);
-      galleryCount=parseGallery(html,url);
-    }catch(e){
-      setStatus('HTML diblokir CORS, mencoba Shopify JSON...');
+    function normalize(url, base) {
+      if (!url) return '';
+      url = url.trim().replace(/&amp;/g, '&');
+      try {
+        if (url.startsWith('//')) return 'https:' + url;
+        return new URL(url, base).href;
+      } catch (e) { return ''; }
     }
 
-    // JSON hanya fallback. Karena JSON tidak punya konsep GalleryViewer,
-    // tetap dipakai hanya bila HTML tidak bisa diakses sama sekali.
-    if(!images.length){
-      try{
-        const data=await getShopifyJSON(url);
-        parseJSON(data);
-      }catch(e){}
+    function originalUrl(url) {
+      if (!document.getElementById('original').checked) return url;
+      try {
+        const u = new URL(url);
+        u.searchParams.delete('width');
+        return u.toString();
+      } catch (e) { return url; }
     }
 
-    setProgress(100);
-
-    if(!images.length){
-      throw new Error('GalleryViewer tidak ditemukan atau gambar tidak dapat diakses.');
+    function ext(url) {
+      try {
+        const m = new URL(url).pathname.match(/\.(jpg|jpeg|png|webp|gif|avif|svg)$/i);
+        return m ? '.' + m[ 1 ].toLowerCase() : '.jpg';
+      } catch (e) { return '.jpg'; }
     }
 
-    setStatus(
-      galleryCount?
-      'GalleryViewer ditemukan: '+galleryCount+' | '+images.length+' gambar.'
-      :'Gambar ditemukan melalui fallback Shopify.'
-    );
-    document.getElementById('productTitle').textContent =
-      productTitle || 'Judul produk tidak ditemukan';
-
-    const descBox = document.getElementById('productDescriptionBox');
-    const descEl = document.getElementById('productDescription');
-    if (productDescription) {
-      descEl.textContent = productDescription;
-      descBox.style.display = 'block';
-    } else {
-      descEl.textContent = '';
-      descBox.style.display = 'none';
+    function isSize(url, alt = '') {
+      return /size.?chart|sizechart|size-chart|ukuran/i.test(url + ' ' + alt);
     }
 
-    render();
-  }catch(e){
-    setStatus(e.message);
-    document.getElementById('status').className='status error';
-  }
+    function add(url, alt, seen) {
+      url = originalUrl(normalize(url, document.getElementById('url').value));
+      if (!url || !/^https?:/i.test(url)) return;
+      if (document.getElementById('excludeSize').checked && isSize(url, alt)) return;
+      if (!seen.has(url)) {
+        seen.add(url);
+        images.push({ url, alt: alt || '' });
+      }
+    }
 
-  btn.disabled=false;btn.textContent='Ambil Gallery';
-}
+    function bestSrcset(srcset) {
+      const arr = srcset.split(',').map(x => {
+        const p = x.trim().split(/\s+/);
+        const w = p[ 1 ] && /w$/.test(p[ 1 ]) ? parseInt(p[ 1 ]) : 0;
+        return { u: p[ 0 ], w };
+      }).filter(x => x.u);
+      arr.sort((a, b) => b.w - a.w);
+      return arr.length ? arr[ 0 ].u : '';
+    }
 
-function safeName(text){
-  return String(text || '')
-    .replace(/[<>:"/\\|?*]/g,'')
-    .replace(/\s+/g,' ')
-    .trim()
-    .replace(/\s/g,'_')
-    .slice(0,100);
-}
+    function parseProductTitle(doc) {
+      const titleEl = doc.querySelector('h1.f-product-single__title');
+      if (!titleEl) return '';
 
-function fileName(i,url){
-  const prefix=document.getElementById('prefix').value.trim();
-  const base = prefix || safeName(productTitle) || 'product';
-  return base+'_'+String(i+1).padStart(2,'0')+ext(url);
-}
+      return titleEl.textContent
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
 
-function render(){
-  const box=document.getElementById('results');
-  const actions=document.getElementById('actions');
+    function parseProductDescription(doc) {
+      const tabs = doc.querySelector('.f-product-tabs__blocks');
+      if (!tabs) return '';
 
-  if(!images.length){
-    box.innerHTML='<div class="empty">Belum ada gambar.</div>';
-    actions.style.display='none';
-    return;
-  }
+      const content = tabs.querySelector('.f-tabs__content-inner .rte');
+      if (!content) return '';
 
-  actions.style.display='block';
-  document.getElementById('count').textContent=images.length+' gambar ditemukan';
+      // Ambil hanya elemen p dari area Description.
+      const paragraphs = [ ...content.querySelectorAll(':scope > p') ]
+        .map(p => p.innerText.replace(/\s+/g, ' ').trim())
+        .filter(Boolean);
 
-  box.innerHTML=images.map((x,i)=>`
+      return paragraphs.join('\n\n');
+    }
+
+    function getActiveSelector() {
+      const preset = document.getElementById('selectorPreset').value;
+      if (preset === '910nineten') return 'div[id^="GalleryViewer-template--"]';
+
+      const custom = document.getElementById('customSelector').value.trim();
+      if (!custom) throw new Error('Masukkan Custom Selector terlebih dahulu.');
+      return custom;
+    }
+
+    function changeSelectorPreset() {
+      const preset = document.getElementById('selectorPreset').value;
+      const custom = document.getElementById('customSelector');
+
+      if (preset === 'custom') {
+        custom.style.display = 'inline-block';
+        custom.focus();
+      } else {
+        custom.style.display = 'none';
+      }
+    }
+
+    async function pasteUrl() {
+      const input = document.getElementById('url');
+      const btn = document.getElementById('pasteBtn');
+
+      try {
+        const text = await navigator.clipboard.readText();
+        input.value = text.trim();
+        input.focus();
+
+        const original = btn.textContent;
+        btn.textContent = 'Pasted!';
+        setTimeout(() => btn.textContent = original, 1000);
+      } catch (e) {
+        // Fallback: browser tidak mengizinkan clipboard API.
+        input.focus();
+        alert('Clipboard tidak dapat diakses. Tekan Ctrl+V pada kolom URL.');
+      }
+    }
+
+    function parseGallery(html, base) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      productTitle = parseProductTitle(doc);
+      productDescription = parseProductDescription(doc);
+      const selector = getActiveSelector();
+      const galleries = [ ...doc.querySelectorAll(selector) ]
+        .filter(gallery => gallery.querySelector('img, [data-src], [srcset]'));
+      const seen = new Set();
+
+      galleries.forEach(gallery => {
+        gallery.querySelectorAll('img').forEach(img => {
+          const alt = img.getAttribute('alt') || '';
+          const candidates = [
+            img.getAttribute('data-src'),
+            img.getAttribute('data-zoom'),
+            img.getAttribute('data-original'),
+            img.getAttribute('data-lazy-src'),
+            img.getAttribute('src')
+          ];
+          candidates.forEach(u => add(u, alt, seen));
+
+          const srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset') || '';
+          if (srcset) add(bestSrcset(srcset), alt, seen);
+        });
+
+        gallery.querySelectorAll('[data-src],[data-zoom],[data-original]').forEach(el => {
+          add(el.getAttribute('data-src'), el.getAttribute('alt') || '', seen);
+          add(el.getAttribute('data-zoom'), el.getAttribute('alt') || '', seen);
+          add(el.getAttribute('data-original'), el.getAttribute('alt') || '', seen);
+        });
+
+        gallery.querySelectorAll('[srcset],[data-srcset]').forEach(el => {
+          const ss = el.getAttribute('srcset') || el.getAttribute('data-srcset') || '';
+          add(bestSrcset(ss), el.getAttribute('alt') || '', seen);
+        });
+      });
+
+      return galleries.length;
+    }
+
+    async function getHTML(url) {
+      const r = await fetch(url, { mode: 'cors', credentials: 'omit' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.text();
+    }
+
+    async function getShopifyJSON(url) {
+      const clean = url.split('?')[ 0 ].replace(/\/$/, '');
+      for (const endpoint of [ clean + '.js', clean + '.json' ]) {
+        try {
+          const r = await fetch(endpoint, { mode: 'cors', credentials: 'omit' });
+          if (!r.ok) continue;
+          return await r.json();
+        } catch (e) { }
+      }
+      throw new Error('JSON Shopify tidak dapat diakses');
+    }
+
+    function parseJSON(data) {
+      const seen = new Set();
+      if (Array.isArray(data.images)) {
+        data.images.forEach(x => add(typeof x === 'string' ? x : x.src, '', seen));
+      }
+    }
+
+    async function fetchProduct() {
+      const url = document.getElementById('url').value.trim();
+      if (!url) { alert('Masukkan URL produk.'); return; }
+
+      images = []; render(); setProgress(5);
+      const btn = document.getElementById('fetchBtn');
+      btn.disabled = true; btn.textContent = 'Mengambil...';
+      setStatus('Mengambil halaman produk...');
+
+      try {
+        let galleryCount = 0;
+        try {
+          const html = await getHTML(url);
+          galleryCount = parseGallery(html, url);
+        } catch (e) {
+          setStatus('HTML diblokir CORS, mencoba Shopify JSON...');
+        }
+
+        // JSON hanya fallback. Karena JSON tidak punya konsep GalleryViewer,
+        // tetap dipakai hanya bila HTML tidak bisa diakses sama sekali.
+        if (!images.length) {
+          try {
+            const data = await getShopifyJSON(url);
+            parseJSON(data);
+          } catch (e) { }
+        }
+
+        setProgress(100);
+
+        if (!images.length) {
+          throw new Error('GalleryViewer tidak ditemukan atau gambar tidak dapat diakses.');
+        }
+
+        setStatus(
+          galleryCount ?
+            'GalleryViewer ditemukan: ' + galleryCount + ' | ' + images.length + ' gambar.'
+            : 'Gambar ditemukan melalui fallback Shopify.'
+        );
+        document.getElementById('productTitle').textContent =
+          productTitle || 'Judul produk tidak ditemukan';
+
+        const descBox = document.getElementById('productDescriptionBox');
+        const descEl = document.getElementById('productDescription');
+        if (productDescription) {
+          descEl.textContent = productDescription;
+          descBox.style.display = 'block';
+        } else {
+          descEl.textContent = '';
+          descBox.style.display = 'none';
+        }
+
+        render();
+      } catch (e) {
+        setStatus(e.message);
+        document.getElementById('status').className = 'status error';
+      }
+
+      btn.disabled = false; btn.textContent = 'Ambil Gallery';
+    }
+
+    function safeName(text) {
+      return String(text || '')
+        .replace(/[<>:"/\\|?*]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\s/g, '_')
+        .slice(0, 100);
+    }
+
+    function fileName(i, url) {
+      const prefix = document.getElementById('prefix').value.trim();
+      const base = prefix || safeName(productTitle) || 'product';
+      return base + '_' + String(i + 1).padStart(2, '0') + ext(url);
+    }
+
+    function render() {
+      const box = document.getElementById('results');
+      const actions = document.getElementById('actions');
+
+      if (!images.length) {
+        box.innerHTML = '<div class="empty">Belum ada gambar.</div>';
+        actions.style.display = 'none';
+        return;
+      }
+
+      actions.style.display = 'block';
+      document.getElementById('count').textContent = images.length + ' gambar ditemukan';
+
+      box.innerHTML = images.map((x, i) => `
     <div class="item">
       <div class="thumb">
         <img src="${esc(x.url)}" loading="lazy"
@@ -321,98 +542,99 @@ function render(){
       </div>
       <div class="info">
         <label><input type="checkbox" class="check" data-index="${i}" checked>
-          <span class="badge">IMAGE ${String(i+1).padStart(2,'0')}</span>
+          <span class="badge">IMAGE ${String(i + 1).padStart(2, '0')}</span>
         </label>
-        <div class="filename">${esc(fileName(i,x.url))}</div>
+        <div class="filename">${esc(fileName(i, x.url))}</div>
         <div class="url">${esc(x.url)}</div>
         <button class="secondary" onclick="downloadOne(${i})">Download</button>
       </div>
     </div>
   `).join('');
-}
+    }
 
-async function downloadOne(i){
-  const x=images[i];
-  try{
-    const r=await fetch(x.url,{mode:'cors'});
-    if(!r.ok)throw new Error();
-    const blob=await r.blob();
-    const u=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=u;a.download=fileName(i,x.url);
-    document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(u),1000);
-  }catch(e){
-    // Fallback membuka URL asli jika CORS menghalangi fetch.
-    window.open(x.url,'_blank','noopener');
-  }
-}
+    async function downloadOne(i) {
+      const x = images[ i ];
+      try {
+        const r = await fetch(x.url, { mode: 'cors' });
+        if (!r.ok) throw new Error();
+        const blob = await r.blob();
+        const u = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = u; a.download = fileName(i, x.url);
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(u), 1000);
+      } catch (e) {
+        // Fallback membuka URL asli jika CORS menghalangi fetch.
+        window.open(x.url, '_blank', 'noopener');
+      }
+    }
 
-async function downloadSelected(){
-  const selected=[...document.querySelectorAll('.check:checked')].map(x=>+x.dataset.index);
-  if(!selected.length){alert('Pilih gambar terlebih dahulu.');return;}
+    async function downloadSelected() {
+      const selected = [ ...document.querySelectorAll('.check:checked') ].map(x => +x.dataset.index);
+      if (!selected.length) { alert('Pilih gambar terlebih dahulu.'); return; }
 
-  for(let i=0;i<selected.length;i++){
-    setStatus('Download '+(i+1)+' / '+selected.length);
-    await downloadOne(selected[i]);
-    await new Promise(r=>setTimeout(r,450));
-  }
-  setStatus(selected.length+' gambar selesai diproses.');
-}
+      for (let i = 0; i < selected.length; i++) {
+        setStatus('Download ' + (i + 1) + ' / ' + selected.length);
+        await downloadOne(selected[ i ]);
+        await new Promise(r => setTimeout(r, 450));
+      }
+      setStatus(selected.length + ' gambar selesai diproses.');
+    }
 
-async function copyText(text, button){
-  if(!text) return;
-  try{
-    await navigator.clipboard.writeText(text);
-  }catch(e){
-    const ta=document.createElement('textarea');
-    ta.value=text;
-    ta.style.position='fixed';
-    ta.style.opacity='0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    ta.remove();
-  }
+    async function copyText(text, button) {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
 
-  const original=button.textContent;
-  button.textContent='Copied!';
-  setTimeout(()=>button.textContent=original,1200);
-}
+      const original = button.textContent;
+      button.textContent = 'Copied!';
+      setTimeout(() => button.textContent = original, 1200);
+    }
 
-function copyTitle(){
-  copyText(
-    document.getElementById('productTitle').textContent.trim(),
-    event.currentTarget
-  );
-}
+    function copyTitle() {
+      copyText(
+        document.getElementById('productTitle').textContent.trim(),
+        event.currentTarget
+      );
+    }
 
-function copyDescription(){
-  copyText(
-    document.getElementById('productDescription').textContent.trim(),
-    event.currentTarget
-  );
-}
+    function copyDescription() {
+      copyText(
+        document.getElementById('productDescription').textContent.trim(),
+        event.currentTarget
+      );
+    }
 
-function setAll(v){document.querySelectorAll('.check').forEach(x=>x.checked=v)}
-function clearResults(){
-  images=[];
-  productTitle='';
-  productDescription='';
-  document.getElementById('productTitle').textContent='';
-  document.getElementById('productDescription').textContent='';
-  document.getElementById('productDescriptionBox').style.display='none';
-  render();
-  setProgress(0);
-  setStatus('Belum ada gambar.');
-}
-function setProgress(v){document.getElementById('bar').style.width=v+'%'}
-function setStatus(t){document.getElementById('status').textContent=t;document.getElementById('status').className='status'}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+    function setAll(v) { document.querySelectorAll('.check').forEach(x => x.checked = v) }
+    function clearResults() {
+      images = [];
+      productTitle = '';
+      productDescription = '';
+      document.getElementById('productTitle').textContent = '';
+      document.getElementById('productDescription').textContent = '';
+      document.getElementById('productDescriptionBox').style.display = 'none';
+      render();
+      setProgress(0);
+      setStatus('Belum ada gambar.');
+    }
+    function setProgress(v) { document.getElementById('bar').style.width = v + '%' }
+    function setStatus(t) { document.getElementById('status').textContent = t; document.getElementById('status').className = 'status' }
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ c ])) }
 
-document.getElementById('excludeSize').addEventListener('change',()=>{if(images.length){images=images.filter(x=>!document.getElementById('excludeSize').checked||!isSize(x.url,x.alt));render()}})
-document.getElementById('original').addEventListener('change',()=>{if(images.length){images=images.map(x=>({...x,url:originalUrl(x.url)}));render()}})
-document.getElementById('prefix').addEventListener('input',()=>{if(images.length)render()})
-</script>
+    document.getElementById('excludeSize').addEventListener('change', () => { if (images.length) { images = images.filter(x => !document.getElementById('excludeSize').checked || !isSize(x.url, x.alt)); render() } })
+    document.getElementById('original').addEventListener('change', () => { if (images.length) { images = images.map(x => ({ ...x, url: originalUrl(x.url) })); render() } })
+    document.getElementById('prefix').addEventListener('input', () => { if (images.length) render() })
+  </script>
 </body>
+
 </html>
