@@ -1,0 +1,12 @@
+{
+    "name": "cloudflare-login",
+    "main": "src/index.js",
+    "compatibility_date": "2026-08-11",
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "login_db",
+            "database_id": "a60e353c-2972-4b26-b298-1a0dd7777d6"
+        }
+    ]
+}
