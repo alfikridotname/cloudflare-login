@@ -1,5 +1,5 @@
-export function registerPage() {
-    return new Response(`
+export function registerPage(error = "") {
+  return new Response(`
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -87,6 +87,15 @@ export function registerPage() {
       text-decoration: none;
       font-weight: bold;
     }
+
+    .error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
   </style>
 </head>
 
@@ -99,6 +108,15 @@ export function registerPage() {
     <p class="description">
       Daftar untuk membuat akun baru.
     </p>
+
+    ${error
+      ? `
+      <div class="error">
+        ${escapeHtml(error)}
+      </div>
+    `
+      : ""
+    }
 
     <form method="POST" action="/register">
 
@@ -157,8 +175,16 @@ export function registerPage() {
 </body>
 </html>
   `, {
-        headers: {
-            "Content-Type": "text/html; charset=UTF-8"
-        }
-    });
+    headers: {
+      "Content-Type": "text/html; charset=UTF-8"
+    }
+  });
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 }
