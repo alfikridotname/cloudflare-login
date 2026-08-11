@@ -29,3 +29,22 @@ export async function createUser(
         )
         .run();
 }
+
+export async function findUserById(
+    env,
+    id
+) {
+    return await env.DB
+        .prepare(`
+      SELECT
+        id,
+        name,
+        email,
+        password_hash
+      FROM users
+      WHERE id = ?
+      LIMIT 1
+    `)
+        .bind(id)
+        .first();
+}

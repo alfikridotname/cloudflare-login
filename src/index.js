@@ -9,6 +9,11 @@ import { handleLogin } from "./auth/login.js";
 import { handleLogout } from "./auth/logout.js";
 
 import { getCurrentUser } from "./auth/session.js";
+
+import {
+    handlePasswordChange
+} from "./auth/password-change.js";
+
 import { profilePage } from "./pages/profile.js";
 
 export default {
@@ -74,11 +79,19 @@ export default {
                 const registered =
                     url.searchParams.get("registered");
 
+                const passwordChanged =
+                    url.searchParams.get(
+                        "password_changed"
+                    );
+
+
                 return loginPage(
                     "",
-                    registered
-                        ? "Registrasi berhasil. Silakan login."
-                        : ""
+                    passwordChanged
+                        ? "Password berhasil diubah. Silakan login kembali."
+                        : registered
+                            ? "Registrasi berhasil. Silakan login."
+                            : ""
                 );
             }
 
@@ -130,6 +143,16 @@ export default {
                 }
 
                 return profilePage(user);
+            }
+
+            if (
+                request.method === "POST" &&
+                path === "/profile/password"
+            ) {
+                return await handlePasswordChange(
+                    request,
+                    env
+                );
             }
 
             /*
