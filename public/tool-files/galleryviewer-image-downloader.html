@@ -232,7 +232,9 @@
       </div>
       <p class="note">
         Selector default 910nineten: <code>div[id^="GalleryViewer-template--"]</code>.
-        Pilih selector lain atau gunakan Custom Selector sesuai struktur website.
+        Pilih selector lain atau gunakan Custom Selector sesuai struktur website.<br>
+        910nineten memakai fetch langsung seperti versi sebelumnya. Website lain dapat memakai <code>/api/proxy</code>
+        jika membutuhkan bypass CORS.
       </p>
     </div>
 
@@ -267,6 +269,18 @@
     let images = [];
     let productTitle = '';
     let productDescription = '';
+
+    // 910nineten keeps the original direct-fetch behavior.
+    // Other presets can use the Worker proxy when needed.
+    const PROXY_ENDPOINT = '/api/proxy?url=';
+
+    function useProxyForCurrentSite() {
+      return document.getElementById('selectorPreset').value !== '910nineten';
+    }
+
+    function proxiedUrl(url) {
+      return PROXY_ENDPOINT + encodeURIComponent(url);
+    }
 
     function normalize(url, base) {
       if (!url) return '';
@@ -421,9 +435,20 @@
       return galleries.length;
     }
 
+    async function requestUrl(url) {
+      const viaProxy = useProxyForCurrentSite();
+      const target = viaProxy ? proxiedUrl(url) : url;
+      const r = await fetch(target, { credentials: viaProxy ? 'same-origin' : 'omit' });
+      if (!r.ok) {
+        let detail = '';
+        try { detail = await r.text(); } catch (e) { }
+        throw new Error('HTTP ' + r.status + (detail ? ' — ' + detail.slice(0, 180) : ''));
+      }
+      return r;
+    }
+
     async function getHTML(url) {
-      const r = await fetch(url, { mode: 'cors', credentials: 'omit' });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const r = await requestUrl(url);
       return await r.text();
     }
 
@@ -431,12 +456,11 @@
       const clean = url.split('?')[ 0 ].replace(/\/$/, '');
       for (const endpoint of [ clean + '.js', clean + '.json' ]) {
         try {
-          const r = await fetch(endpoint, { mode: 'cors', credentials: 'omit' });
-          if (!r.ok) continue;
+          const r = await requestUrl(endpoint);
           return await r.json();
         } catch (e) { }
       }
-      throw new Error('JSON Shopify tidak dapat diakses');
+      throw new Error('JSON tidak dapat diakses.');
     }
 
     function parseJSON(data) {
@@ -461,7 +485,7 @@
           const html = await getHTML(url);
           galleryCount = parseGallery(html, url);
         } catch (e) {
-          setStatus('HTML diblokir CORS, mencoba Shopify JSON...');
+          setStatus('Website menolak CORS. Mencoba melalui Worker proxy...');
         }
 
         // JSON hanya fallback. Karena JSON tidak punya konsep GalleryViewer,
@@ -555,8 +579,7 @@
     async function downloadOne(i) {
       const x = images[ i ];
       try {
-        const r = await fetch(x.url, { mode: 'cors' });
-        if (!r.ok) throw new Error();
+        const r = await requestUrl(x.url);
         const blob = await r.blob();
         const u = URL.createObjectURL(blob);
         const a = document.createElement('a');
