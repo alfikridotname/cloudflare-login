@@ -31,6 +31,20 @@ export async function hashPassword(password, salt) {
     return new Uint8Array(bits);
 }
 
+export async function sha256(value) {
+    const data =
+        typeof value === "string"
+            ? new TextEncoder().encode(value)
+            : value;
+
+    const hash = await crypto.subtle.digest(
+        "SHA-256",
+        data
+    );
+
+    return new Uint8Array(hash);
+}
+
 export function base64Encode(bytes) {
     let binary = "";
 
@@ -50,4 +64,25 @@ export function base64Decode(value) {
     }
 
     return bytes;
+}
+
+export function base64UrlEncode(bytes) {
+    return base64Encode(bytes)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+}
+
+export function constantTimeEqual(a, b) {
+    if (a.length !== b.length) {
+        return false;
+    }
+
+    let result = 0;
+
+    for (let i = 0; i < a.length; i++) {
+        result |= a[ i ] ^ b[ i ];
+    }
+
+    return result === 0;
 }
