@@ -9,6 +9,7 @@ import { handleLogin } from "./auth/login.js";
 import { handleLogout } from "./auth/logout.js";
 
 import { getCurrentUser } from "./auth/session.js";
+import { profilePage } from "./pages/profile.js";
 
 export default {
     async fetch(request, env) {
@@ -112,6 +113,23 @@ export default {
                 }
 
                 return dashboardPage(user);
+            }
+
+            if (
+                request.method === "GET" &&
+                path === "/profile"
+            ) {
+                const user =
+                    await getCurrentUser(
+                        request,
+                        env
+                    );
+
+                if (!user) {
+                    return redirect("/login");
+                }
+
+                return profilePage(user);
             }
 
             /*
