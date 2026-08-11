@@ -1,7 +1,7 @@
 export function toolShellPage(tool) {
-    const title = formatToolName(tool);
+  const title = formatToolName(tool);
 
-    return new Response(`
+  return new Response(`
 <!DOCTYPE html>
 <html lang="id">
 
@@ -187,7 +187,7 @@ body {
 
   <iframe
     class="tool-frame"
-    src="/tools/${encodeURIComponent(tool)}.html"
+    src="/tool-files/${encodeURIComponent(tool)}.html"
     title="${escapeHtml(title)}"
     allow="clipboard-read; clipboard-write"
   ></iframe>
@@ -198,30 +198,30 @@ body {
 
 </html>
   `, {
-        headers: {
-            "Content-Type":
-                "text/html; charset=UTF-8"
-        }
-    });
+    headers: {
+      "Content-Type":
+        "text/html; charset=UTF-8"
+    }
+  });
 }
 
 
 function formatToolName(tool) {
 
-    return tool
-        .replace(/[-_]+/g, " ")
-        .replace(/\b\w/g, char =>
-            char.toUpperCase()
-        );
+  return tool
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, char =>
+      char.toUpperCase()
+    );
 }
 
 
 function escapeHtml(value) {
 
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

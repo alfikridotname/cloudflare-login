@@ -150,6 +150,20 @@ export default {
                 return toolShellPage(tool);
             }
 
+            if (
+                request.method === "GET" &&
+                path.startsWith("/tool-files/")
+            ) {
+                const user =
+                    await getCurrentUser(request, env);
+
+                if (!user) {
+                    return redirect("/login");
+                }
+
+                return env.ASSETS.fetch(request);
+            }
+
             /*
  * ==========================================
  * PROTECTED TOOL HTML ASSETS
