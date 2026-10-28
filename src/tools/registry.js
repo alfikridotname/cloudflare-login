@@ -15,5 +15,14 @@ export const tools = [
             "Tool untuk memotong storyboard menjadi 3x3.",
         icon: "✂️",
         category: "Youtube Tools"
+    },
+
+    {
+        slug: "AI_tiktok_affiliate_prompt_generator_gemini",
+        name: "AI Tiktok Affilliate Prompt Generator Gemini",
+        description:
+            "Prompt Generator",
+        icon: "✂️",
+        category: "Product Tools"
     }
 ];
